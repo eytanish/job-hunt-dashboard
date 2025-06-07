@@ -115,7 +115,10 @@ def load_data_from_sheets(spreadsheet_name, sheet_name):
     """טעינת נתונים מגוגל שיטס לפי משתמש"""
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+        
+        # קריאת credentials מ-Streamlit Secrets
+        credentials_info = st.secrets["credentials"]
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scope)
         client = gspread.authorize(creds)
         
         spreadsheet = client.open(spreadsheet_name)
@@ -144,7 +147,10 @@ def update_job_status(spreadsheet_name, sheet_name, row_index, status, cv_versio
     """עדכון סטטוס משרה בגוגל שיטס"""
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+        
+        # קריאת credentials מ-Streamlit Secrets
+        credentials_info = st.secrets["credentials"]
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scope)
         client = gspread.authorize(creds)
         
         spreadsheet = client.open(spreadsheet_name)
