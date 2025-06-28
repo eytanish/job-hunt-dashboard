@@ -145,11 +145,30 @@ def update_job_status(spreadsheet_name, sheet_name, row_index, status, cv_versio
     """עדכון סטטוס משרה בגוגל שיטס"""
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+        service_account_info = dict(st.secrets["credentials"])
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
         client = gspread.authorize(creds)
-        
+
         spreadsheet = client.open(spreadsheet_name)
         sheet = spreadsheet.worksheet(sheet_name)
+
+        # עדכון הערכים הרלוונטיים לעמודות
+        if cv_version:
+            sheet.update_cell(row_index + 2, 11, cv_version)  # עמודה K
+        if intro_email:
+            sheet.update_cell(row_index + 2, 12, intro_email)  # עמודה L
+        if status:
+            if applied_date:
+                sheet.update_cell(row_index + 2, 13, f"{status} - {applied_date}")  # עמודה M
+            else:
+                sheet.update_cell(row_index + 2, 13, status)  # עמודה M
+        if rating:
+            sheet.update_cell(row_index + 2, 14, rating)  # עמודה N
+
+        return True
+    except Exception as e:
+        st.error(f"שגיאה בעדכון: {e}")
+        return False
         
         # עדכון הערכים ברלוונטיים לעמודות
         if cv_version:
