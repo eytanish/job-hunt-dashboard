@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from oauth2client.service_account import ServiceAccountCrכedentials
+from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
