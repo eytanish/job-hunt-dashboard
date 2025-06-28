@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from oauth2client.service_account import ServiceAccountCrכedentials
 from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
@@ -487,7 +487,8 @@ def main():
     
     with col1:
         if 'ציון התאמה (1–5)' in filtered_df.columns:
-            ratings = filtered_df['ציון התאמה (1–5)'].dropna()
+            ratings = filtered_df['ציון התאמה (1–5)']
+            ratings = pd.to_numeric(ratings, errors='coerce').dropna()
             if len(ratings) > 0:
                 avg_rating = ratings.astype(float).mean()
                 st.metric("⭐ ציון התאמה ממוצע", f"{avg_rating:.1f}")
