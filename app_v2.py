@@ -72,13 +72,12 @@ def main():
     for index, row in df.iterrows():
         with st.container():
             st.subheader(f"🎯 {row.get('שם המשרה', 'ללא שם')}")
-            st.markdown(f"**חברה:** {row.get('שם החברה', 'לא צוין')}  
-"
-                        f"**מיקום:** {row.get('מיקום המשרה', 'לא צוין')}  
-"
-                        f"**תיאור:** {row.get('תקציר משרה') or row.get('תיאור משרה') or 'אין תיאור'}  
-"
-                        f"**סיכום GPT:** {row.get('תקציר משרה בעיבוד GPT', 'טרם עובדה')}")
+            st.markdown(f"""
+**חברה:** {row.get('שם החברה', 'לא צוין')}  
+**מיקום:** {row.get('מיקום המשרה', 'לא צוין')}  
+**תיאור:** {row.get('תקציר משרה') or row.get('תיאור משרה') or 'אין תיאור'}  
+**סיכום GPT:** {row.get('תקציר משרה בעיבוד GPT', 'טרם עובדה')}
+""")
 
             if st.button(f"✨ בצע תמצות GPT למשרה {index + 1}", key=f"gpt_{index}"):
                 text_to_summarize = row.get('תקציר משרה') or row.get('תיאור משרה') or ''
