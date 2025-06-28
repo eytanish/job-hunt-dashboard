@@ -138,8 +138,9 @@ def load_data_from_sheets(spreadsheet_name, sheet_name):
             
         return df
     except Exception as e:
-        st.error(f"שגיאה בטעינת נתונים: {e}")
-        return pd.DataFrame()
+        import traceback
+        st.error("שגיאה בטעינת נתונים:")
+        st.text(traceback.format_exc())
 
 def update_job_status(spreadsheet_name, sheet_name, row_index, status, cv_version="", intro_email="", applied_date="", rating=""):
     """עדכון סטטוס משרה בגוגל שיטס"""
