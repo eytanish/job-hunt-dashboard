@@ -115,10 +115,7 @@ def load_data_from_sheets(spreadsheet_name, sheet_name):
     """טעינת נתונים מגוגל שיטס לפי משתמש"""
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        
-        # קריאת credentials מ-Streamlit Secrets
-        credentials_info = st.secrets["credentials"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
         client = gspread.authorize(creds)
         
         spreadsheet = client.open(spreadsheet_name)
@@ -147,10 +144,7 @@ def update_job_status(spreadsheet_name, sheet_name, row_index, status, cv_versio
     """עדכון סטטוס משרה בגוגל שיטס"""
     try:
         scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        
-        # קריאת credentials מ-Streamlit Secrets
-        credentials_info = st.secrets["credentials"]
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials_info, scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
         client = gspread.authorize(creds)
         
         spreadsheet = client.open(spreadsheet_name)
@@ -396,6 +390,7 @@ def main():
                     <p><strong>🏷️ תחום:</strong> {row.get('סוג החברה', 'לא צוין')}</p>
                     <p><strong>📍 מיקום:</strong> {row.get('מיקום המשרה', 'לא צוין')}</p>
                     <p><strong>📅 פורסם:</strong> {row.get('תאריך פרסום המשרה', 'לא נמצא')}</p>
+<p><strong>📝 תיאור:</strong> {row.get('תקציר משרה') or row.get('תיאור משרה') or 'אין תיאור'}</p>
                     <span class="status-badge {status_class}">{status_text}</span>
                 </div>
                 """, unsafe_allow_html=True)
