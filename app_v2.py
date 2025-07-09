@@ -1,10 +1,8 @@
-
 import streamlit as st
 import pandas as pd
 import gspread
 import openai
-from oauth2client.service_account import ServiceAccountCredentials
-from datetime import datetime
+from google.oauth2.service_account import Credentials
 import traceback
 
 # קונפיגורציה
@@ -13,11 +11,9 @@ st.set_page_config(page_title="🎯 Job Dashboard v2", layout="wide")
 # הגדרות חיבור לגוגל שיטס
 def get_gsheet_data(spreadsheet_name, sheet_name):
     try:
-        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-        service_account_info = dict(st.secrets["credentials"])
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
-        client = gspread.authorize(creds)
-
+        scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        credentials = Credentials.from_service_account_info(st.secrets["credentials"], scopes=scope)
+        client = gspread.authorize(credentials)
         sheet = client.open(spreadsheet_name).worksheet(sheet_name)
         data = sheet.get_all_records()
         return pd.DataFrame(data), sheet
@@ -26,17 +22,15 @@ def get_gsheet_data(spreadsheet_name, sheet_name):
         st.text(traceback.format_exc())
         return pd.DataFrame(), None
 
-# פונקציה לשליחת בקשה ל-GPT
+# תמצות GPT
 def summarize_with_gpt(prompt_text):
-    openai.api_key = st.secrets["openai_api_key"]
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "אתה מסכם משרות לעברית בצורה תמציתית ופשוטה, עבור מחפש עבודה."},
-                {"role": "user", "content": f"""סכם את תיאור המשרה הבא בצורה פשוטה ותמציתית, והצג את עיקרי הדרישות והאחריות:
-
-{prompt_text}"""}
+                {"role": "user", "content": f"""סכם את תיאור המשרה הבא בצורה פשוטה ותמציתית, והצג את עיקרי הדרישות והאחריות:\n\n{prompt_text}"""}
             ],
             temperature=0.7,
             max_tokens=300
@@ -47,10 +41,10 @@ def summarize_with_gpt(prompt_text):
         st.text(traceback.format_exc())
         return None
 
-# פונקציה לעדכון שורה בגוגל שיטס
+# עדכון הסיכום בעמודה P (index 15 + 1)
 def update_summary(sheet, row_index, summary_text):
     try:
-        sheet.update_cell(row_index + 2, 16 + 1, summary_text)  # עמודה P = index 16 (מתחיל ב-0)
+        sheet.update_cell(row_index + 2, 16, summary_text)
         st.success("הסיכום עודכן בהצלחה בעמודה P")
     except Exception as e:
         st.error("שגיאה בעדכון גוגל שיטס:")
